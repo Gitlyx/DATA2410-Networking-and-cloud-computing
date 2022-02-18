@@ -31,3 +31,50 @@ with socket(AF_INET, SOCK_STREAM) as sock:
         except Exception as E:
             print(E)
 ```
+
+
+#### IP address
+This fetches the local IP addres on the current host
+``` python
+#!/usr/bin/env python
+
+import socket
+
+ip = socket.gethostbyname('example.com')
+print(ip)
+
+```
+
+#### UDP quote on client
+This fetches a random quote generated on a server though User Datagram Protocol.
+```python
+#!/usr/bin/env python
+
+import socket
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    host = "time.nist.gov"
+    port = 13
+
+    s.connect((host, port))
+    s.sendall(b'')
+    print(str(s.recv(4096), 'utf8'))
+
+```
+
+#### TCP Time and date
+This fetches the time and date on a server through Transmission Control Protocol .
+```python
+#!/usr/bin/env python
+
+import socket
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    host = "time.nist.gov"
+    port = 13
+
+    s.connect((host, port))
+    s.sendall(b'')
+    print(str(s.recv(4096), 'utf8'))
+
+```
