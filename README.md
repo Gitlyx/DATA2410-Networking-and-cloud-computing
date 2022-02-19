@@ -63,7 +63,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 ```
 
 #### TCP Time and date
-This fetches the time and date on a server through Transmission Control Protocol .
+This fetches the time and date on a server through Transmission Control Protocol and displays it in the terminal.
 ```python
 #!/usr/bin/env python
 
