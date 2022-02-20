@@ -8,4 +8,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
     s.connect((host, port))
     s.sendall(b'')
+    print("-------------------------------------------------------------------------")
     print(str(s.recv(4096), 'utf8'))
