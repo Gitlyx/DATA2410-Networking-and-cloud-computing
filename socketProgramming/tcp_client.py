@@ -10,3 +10,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.sendall(b'')
     print("-------------------------------------------------------------------------")
     print(str(s.recv(4096), 'utf8'))
+    print(str(s.recv(4096), 'utf8'))
+
