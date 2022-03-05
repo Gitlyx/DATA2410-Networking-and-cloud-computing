@@ -1,5 +1,5 @@
 import re
-
+import responses as resp
 # Logic for detecting words in a sentence. This allows the bots to respond without having an exact word count.
 
 
@@ -12,7 +12,7 @@ def messageScanner(userMessage, wordPool, singleResponse=False, requiredWords=[]
         if word in wordPool:
             wordsDetected += 1
     #Calculates the match rate compared to the words detected.
-    matchRate = float(wordsDetected) / float(requiredWords)
+    matchRate = float(wordsDetected) / float(len(wordPool))
 
     #Checks if any of the words are in the required word list.
     for word in requiredWords:
@@ -28,9 +28,26 @@ def messageScanner(userMessage, wordPool, singleResponse=False, requiredWords=[]
 
 
 def responseTrigger(userMessage):
-    matchRateList = []
+    matchRateList = {}
 
-    def reply(response, wordPool, singleResponse=False, requiredWords=[]):
+    def reply(botResponse, wordPool, singleResponse=False, requiredWords=[]):
         nonlocal matchRateList
-        matchRateList[response] = messageScanner(
+        matchRateList[botResponse] = messageScanner(
             userMessage, wordPool, singleResponse, requiredWords)
+
+    reply(resp.replyGreeting(), resp.isGreeting, singleResponse=True)
+    reply(resp.replyFarewell(), resp.isFarewell, singleResponse=True)
+
+    bestMatch = max(matchRateList, key=matchRateList.get)
+
+    return bestMatch
+
+
+def getResponse(userMessage):
+    splitMessage = re.split(r'\s+|[,;?!.-]\s*', userMessage.lower())
+    response = responseTrigger(splitMessage)
+    return response
+
+
+while True:
+    print(getResponse(input('You:')))
