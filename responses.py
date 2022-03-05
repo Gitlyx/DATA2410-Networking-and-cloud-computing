@@ -24,3 +24,28 @@ def replyFarewell():
         'Good seeing you', ]
     response = random.choice(farewell)
     return response
+
+
+people = ['Ulrik', 'Johan', 'Mohammed', 'Ahsan', 'Charlie', 'Adrian']
+
+
+def oneReply(): return random.choice(people)
+
+
+def manyReplies():
+    randomPeople = people.copy()
+    random.shuffle(randomPeople)
+    return randomPeople[:random.randrange(5)+1]
+
+
+def allReplies(): return people
+
+
+def allGoodbye():
+    print("\nThe host is leaving, everyone say goodbye!\n")
+    byeAll = manyReplies()
+    for i in byeAll:
+        print(i, ": ", replyFarewell(), "\n")
+
+
+allGoodbye()
