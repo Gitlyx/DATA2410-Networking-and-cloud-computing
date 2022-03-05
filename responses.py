@@ -1,6 +1,9 @@
 import random
 
-isGreeting = ['hello', 'hey', 'sup', 'hi']
+people = ['Ulrik', 'Johan', 'Mohammed', 'Ahsan', 'Charlie', 'Adrian']
+triggerGreeintg = ['hello', 'hey', 'sup', 'hi', 'hei', 'skjera?']
+triggerFarewell = ['bye', 'goodbye', 'farewell', 'cya']
+triggerHelp = ['--help', '-h', 'help']
 
 
 def replyGreeting():
@@ -13,20 +16,17 @@ def replyGreeting():
     return response
 
 
-isFarewell = ['bye', 'goodbye', 'farewell', 'cya']
-
-
 def replyFarewell():
     farewell = [
-        'Ahh you\'re leaving already?',
-        'See you another time bud!',
-        'Cya!',
-        'Good seeing you', ]
+        'Oh nei ikke stikk',
+        'Snakkes bro',
+        'HEY! Du skylder meg en kebab!',
+        'Brur kom hvor skal du?!',
+        'Ææælig, kom her',
+        'Venta brur',
+    ]
     response = random.choice(farewell)
     return response
-
-
-people = ['Ulrik', 'Johan', 'Mohammed', 'Ahsan', 'Charlie', 'Adrian']
 
 
 def oneReply(): return random.choice(people)
@@ -35,17 +35,14 @@ def oneReply(): return random.choice(people)
 def manyReplies():
     randomPeople = people.copy()
     random.shuffle(randomPeople)
-    return randomPeople[:random.randrange(5)+1]
+    return randomPeople[:random.randrange(len(people))+1]
 
 
 def allReplies(): return people
 
 
 def allGoodbye():
-    print("\nThe host is leaving, everyone say goodbye!\n")
-    byeAll = manyReplies()
+    byeAll = allReplies()
     for i in byeAll:
-        print(i, ": ", replyFarewell(), "\n")
-
-
-allGoodbye()
+        print(i, ": \t", replyFarewell())
+    print("\n")

@@ -27,9 +27,7 @@ def messageScanner(userMessage, wordPool, singleResponse=False, requiredWords=[]
     else:
         return 0
 
-# Logic for triggering a response based on detected word in a liste.
-
-
+# Logic for triggering a response based on detected word in a list.
 def responseTrigger(userMessage):
     matchRateList = {}
 
@@ -38,8 +36,8 @@ def responseTrigger(userMessage):
         matchRateList[botResponse] = messageScanner(
             userMessage, wordPool, singleResponse, requiredWords)
 
-    reply(resp.replyGreeting(), resp.isGreeting, singleResponse=True)
-    reply(resp.replyFarewell(), resp.isFarewell, singleResponse=True)
+    reply(resp.replyGreeting(), resp.triggerGreeintg, singleResponse=True)
+    reply(resp.replyFarewell(), resp.triggerFarewell, singleResponse=True)
 
     bestMatch = max(matchRateList, key=matchRateList.get)
 
