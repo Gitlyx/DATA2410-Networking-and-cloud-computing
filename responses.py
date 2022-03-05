@@ -1,26 +1,26 @@
 import random
 
-
-def profoundResponse(noun):
-    alt1 = ['ARRGHH! ', 'Hmpf.. ', '... ', 'Grr.. ']
-    return (random.choice(alt1) + "Me no like {}".format(noun+'ing!'))
+isGreeting = ['hello', 'hey', 'sup', 'hi']
 
 
-def smartResponse(noun):
-    alt1 = ['{}?, let me see .. ',
-            '{} is a bit .. ',
-            '{}ing you say? ',
-            'I see you like to {}, '
-            ]
-    return(random.choice(alt1).format(noun) + 'I can do {}'.format(noun+'ing.'))
+def replyGreeting():
+    greeting = [
+        'What sup!',
+        'Yooo!',
+        'Oh you\'re here!',
+        'Look who showed up!']
+    response = random.choice(greeting)
+    return response
 
 
-def lazyResponse(noun):
-    alt1 = ['weak', 'slow', 'tired', 'hungry']
-    alt2=['sleep', 'rest', 'eat']
-    return('I am too {} to {}, '.format(random.choice(alt1), noun) + 'I rather go {}.'.format(random.choice(alt2)))
+isFarewell = ['bye', 'goodbye', 'farewell', 'cya']
 
 
-def randomResponse(noun):
-    responses = [profoundResponse, smartResponse, lazyResponse]
-    return random.choice(responses)(noun)
+def replyFarewell():
+    farewell = [
+        'Ahh you\'re leaving already?',
+        'See you another time bud!',
+        'Cya!',
+        'Good seeing you', ]
+    response = random.choice(farewell)
+    return response
