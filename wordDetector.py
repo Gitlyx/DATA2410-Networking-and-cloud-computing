@@ -28,27 +28,37 @@ def messageScanner(userMessage, wordPool, singleResponse=False, requiredWords=[]
         return 0
 
 # Logic for triggering a response based on detected word in a list.
+
+
 def responseTrigger(userMessage):
     matchRateList = {}
 
+    # A helper to easier bind arguments to multiple the functions.
     def reply(botResponse, wordPool, singleResponse=False, requiredWords=[]):
         nonlocal matchRateList
         matchRateList[botResponse] = messageScanner(
             userMessage, wordPool, singleResponse, requiredWords)
 
-    reply(resp.replyGreeting(), resp.triggerGreeintg, singleResponse=True)
+    # Any words detected in wordPool will give botResponse.
+    reply(resp.replyGreeting(), resp.triggerGreeting, singleResponse=True)
     reply(resp.replyFarewell(), resp.triggerFarewell, singleResponse=True)
+    reply(resp.replyFarewell(), resp.triggerFarewell, singleResponse=True)
+    reply(resp.replyExit(), resp.triggerExit,
+          singleResponse=True, requiredWords=[])
+    reply(resp.replyHelp(), resp.triggerHelp,
+          singleResponse=True, requiredWords=['--help', '-h'])
 
+    # Takes input and compares with the best match rate.
     bestMatch = max(matchRateList, key=matchRateList.get)
 
-    return bestMatch
+    return resp.unknownReply(userMessage) if matchRateList[bestMatch] < 1 else bestMatch
 
 
 def getResponse(userMessage):
-    splitMessage = re.split(r'\s+|[,;?!.-]\s*', userMessage.lower())
+    splitMessage = re.split(r'\s+|[,;?!.]\s*', userMessage.lower())
     response = responseTrigger(splitMessage)
     return response
 
 
 while True:
-    print(getResponse(input('You: ')))
+    print(resp.oneReply(), ": ", getResponse(input('\nYou: ')))
