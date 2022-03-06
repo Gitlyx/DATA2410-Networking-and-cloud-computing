@@ -40,7 +40,7 @@ def server_commands(client_socket, message):
 # ----------------------------------------------------------------
 # Connection variables
 IP = '192.168.56.1'
-PORT = '2345'
+PORT = 2345
 
 # Socket implementation
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
