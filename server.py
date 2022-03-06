@@ -6,22 +6,19 @@ client_list = []
 
 
 def connect_client(client_socket, client_address):
-    try:
-        client_list.append(client_socket)
-        client_socket.send('Connection successful.'.encode('utf8'))
-        server_broadcast(
-            f'IP: {client_address} has conncted to the server.')
-    except:
-        print('ERROR: Connection could not be established.')
+
+    client_list.append(client_socket)
+    client_socket.send('Connection successful.'.encode('utf8'))
+    server_broadcast(f'IP: {client_address} has conncted to the server.')
 
 
-def server_listener(client_socket):
+def server_listener():
     while True:
-        message = client_socket.recv(1024).decode()
-        server_broadcast(client_socket, message)
+        message = client_socket.recv(1024).decode('utf8')
+        server_broadcast(message)
 
 
-def server_broadcast(client_socket, message):
+def server_broadcast(message):
 
     for client in client_list:
         message = f'{client_socket}: {message}'
@@ -33,22 +30,21 @@ def server_broadcast(client_socket, message):
 def server_commands(client_socket, message):
     if message == 'exit':
         server_broadcast(f'{client_socket} has left.')
-        client_socket.send("Closing the server ...".encode('utf8'))
+        client_socket.send("Closing the server ...".encode())
         client_socket.close()
 
 
 # ----------------------------------------------------------------
-# Connection variables
-IP = '192.168.56.1'
-PORT = 2345
-
 # Socket implementation
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((IP, PORT))
-server_socket.listen()
+server_socket.bind((socket.gethostname(), 2345))
+server_socket.listen(5)
+print("Listening to connections ...")
 
 while True:
-    print("Listening to connections ...")
     client_socket, client_address = server_socket.accept()
+    print(f'{client_address} has connected ')
     connect_client(client_socket, client_address)
-    server_listener(client_socket, client_address)
+    for i in client_list:
+        print(f'{client_address}')
+    server_listener()
