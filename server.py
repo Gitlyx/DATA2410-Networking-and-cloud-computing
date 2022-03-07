@@ -45,6 +45,4 @@ while True:
     client_socket, client_address = server_socket.accept()
     print(f'{client_address} has connected ')
     connect_client(client_socket, client_address)
-    for i in client_list:
-        print(f'{client_address}')
     server_listener()
