@@ -9,15 +9,15 @@ def broadcast(message):
         client.send(message.encode())
 
 
-def server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((socket.gethostname(), 2345))
-    server_socket.listen(4)
-    print("Listening to connections ...")
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind(('192.168.56.1', 2345))
+server_socket.listen(4)
+print("Listening to connections ...")
 
-    while True:
-        client_socket, client_address = server_socket.accept()
-        client_socket.send('Connection successful.'.encode())
-        client_list.append(client_socket)
-        broadcast(
-            f'IP: {client_address} has conncted to the server.')
+while True:
+    client_socket, client_address = server_socket.accept()
+    client_socket.send(
+        'You have successfully connected to the server.'.encode())
+    client_list.append(client_socket)
+    broadcast(
+        f'IP: {client_address} has conncted to the server.')
