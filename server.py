@@ -20,7 +20,8 @@ def broadcast(message):
         client.send(message.encode())
 
 
-# Listener twith an exception handler that closes sockets in case the responses are fired off too fast.
+# Listener with an exception handler that closes the socket and ends the thread upon error detection.
+# This prevents the server from idling due to BrokenPipeErrors that occurs upon read/write error on sockets.
 def listener(client):
     while True:
         try:
@@ -37,8 +38,7 @@ def server():
         client_socket, client_address = server_socket.accept()
         client_list.append(client_socket)
 
-        thread = threading.Thread(target=listener, args=(client_socket,))
-        thread.start()
+        threading.Thread(target=listener, args=(client_socket,)).start()
 
 
 server()
