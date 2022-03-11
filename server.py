@@ -6,11 +6,13 @@ server_socket.bind((socket.gethostname(), 2345))
 server_socket.listen(4)
 print("Server is listening ...")
 
-client_list=[]
+client_list = []
+
 
 def broadcast(message):
+    print(message)
     for client in client_list:
-        client.sendall(message.encode())
+        client.send(message.encode())
 
 
 def listener(client):
@@ -22,14 +24,16 @@ def listener(client):
             client_list.remove(client)
             client.close()
             break
+
+
 def server():
     while True:
         client_socket, client_address = server_socket.accept()
         client_list.append(client_socket)
-        print(f'Server: {client_address} has connected to the server.')
-        broadcast(f'Server: {client_address} has connected to the server.')
+        broadcast(f'Update: {client_address} has connected to the server.')
 
         thread = threading.Thread(target=listener, args=(client_socket,))
         thread.start()
+
 
 server()
