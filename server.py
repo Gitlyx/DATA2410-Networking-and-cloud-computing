@@ -5,18 +5,23 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((socket.gethostname(), 2345))
 server_socket.listen(4)
 print("Server is listening ...")
+
 client_list=[]
 
 def broadcast(message):
     for client in client_list:
-        client.send(message.encode())
+        client.sendall(message.encode())
 
 
-def handle(client):
+def listener(client):
     while True:
-        response = client.recv(1024).decode()
-        broadcast(response)
-
+        try:
+            response = client.recv(1024).decode()
+            broadcast(response)
+        except:
+            client_list.remove(client)
+            client.close()
+            break
 def server():
     while True:
         client_socket, client_address = server_socket.accept()
@@ -24,7 +29,7 @@ def server():
         print(f'Server: {client_address} has connected to the server.')
         broadcast(f'Server: {client_address} has connected to the server.')
 
-        thread = threading.Thread(target=handle, args=(client_socket,))
+        thread = threading.Thread(target=listener, args=(client_socket,))
         thread.start()
 
 server()
