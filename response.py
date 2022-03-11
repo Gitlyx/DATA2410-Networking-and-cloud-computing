@@ -9,10 +9,16 @@ action_list = [
 
 def positive(word):
     positive_responses = [
-        f'Wow, {word}? My palms are sweaty ..',
-        f'I can\'t handle {word}ing, my knees are weak and arms are heavy.',
-        f'Finally someone who likes {word}ing, just let me grab my moms spaghetti.',
-        f'I haven\'t tried {word}ing before, but I promise I\'ll remain calm and ready. ',
+        f'Wow, {word}? With burning passion! 🔥🔥🔥',
+        f'{word}? Affirmative, ninja moving out! 🥷🥷🥷',
+        f'Order recieved! Decepticons ready to {word}. 🤖🤖🤖',
+        f'Hold up, {word}ing? Please let me bring my pet rock. 🪨🪨🪨',
+        f'Finally someone who likes {word}ing, let me finish my spaghetto. 🍝🍝🍝',
+        f'{word.upper()}!!! Lets goooo!! 🤯🤯🤯',
+        f'It\'s a party! Bro, lets go {word}ing now! 🎉🎉🎉',
+        f'{word.upper()}!!{word.upper()}!!{word.upper()}!!😎😎😎',
+
+
     ]
 
     response = random.choice(positive_responses)

@@ -50,7 +50,7 @@ def user_mode():
 
     while True:
         response = input(f"\n{USER}: ")
-        client_socket.send(f'{USER}: \t{response}'.encode())
+        client_socket.send(f'\n{USER}: \t{response}'.encode())
 
 
 if USER.lower() == 'user':
