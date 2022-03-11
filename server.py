@@ -1,23 +1,30 @@
 import socket
+import threading
 
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((socket.gethostname(), 2345))
+server_socket.listen(4)
 
-client_list = []
-
+client_list=[]
 
 def broadcast(message):
     for client in client_list:
-        client.send(message.encode())
+        client.send(message)
 
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('192.168.56.1', 2345))
-server_socket.listen(4)
-print("Listening to connections ...")
+def handle(client):
+    while True:
+        response = client.recv(1024)
+        broadcast(response)
 
-while True:
-    client_socket, client_address = server_socket.accept()
-    client_socket.send(
-        'You have successfully connected to the server.'.encode())
-    client_list.append(client_socket)
-    broadcast(
-        f'IP: {client_address} has conncted to the server.')
+def server():
+    print("Listening to connections ...")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        broadcast(f'Server: {client_address} has connected to the server.')
+
+        thread = threading.Thread(target=handle, args=(client_socket,))
+        thread.start()
+
+server()
