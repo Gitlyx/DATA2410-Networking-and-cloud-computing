@@ -3,10 +3,14 @@ import threading
 
 IP = socket.gethostname()
 PORT = 2345
-BOT = 'Charlie'
+NAME = None
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((IP, PORT))
+client_socket.connect((IP, PORT))    
+
+
+
+
 
 def recieve():    
     while True:
