@@ -4,18 +4,23 @@ import threading
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((socket.gethostname(), 2345))
 server_socket.listen(4)
-print("Server is listening ...")
+print(
+    '################################\n'
+    'WELCOME TO THE COOLEST ROOM EVER!\n'
+    '################################\n'
+)
 
 client_list = []
 
-    
 
+# Broadcasts messages to all clients allowing bots to respond.
 def broadcast(message):
     print(message)
     for client in client_list:
         client.send(message.encode())
 
 
+# Listener twith an exception handler that closes sockets in case the responses are fired off too fast.
 def listener(client):
     while True:
         try:

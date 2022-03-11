@@ -12,8 +12,12 @@ USER = sys.argv[1]
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
+client_socket.send(
+    f'{response.avatar()} {USER} has joined the server!'.encode())
 
 
+# Function to detect verbs in string as well as format a fitting response
+# Special symbols are filtered and set to lower case for easier detection.
 def bot_response(message):
     word_list = re.split(r'\s+|[,;?!.]\s*', message.lower())
     word_found = False
@@ -33,6 +37,8 @@ def bot_response(message):
     return bot_response
 
 
+# Bot-mode allows the client to listen and automatically respond to non-bot USERs
+# User-mode allows the client to listen to send messages and commands.
 def bot_mode():
     print(f'Chat bot has been launched with name {USER}')
 
@@ -53,12 +59,8 @@ def user_mode():
         client_socket.send(f'\n{USER}: \t{response}'.encode())
 
 
+# IF test to delegate role upon user declaration.
 if USER.lower() == 'user':
     threading.Thread(target=user_mode).start()
-    client_socket.send(
-        f'{response.avatar()} {USER} has joined the server!'.encode())
-
 else:
     threading.Thread(target=bot_mode).start()
-    client_socket.send(
-        f'{response.avatar()} {USER} has joined the server!'.encode())

@@ -1,5 +1,7 @@
 import random
 
+# Responses was refactored to unclutter and separate logic from trivial code.
+
 icon_list = ['😡', '😳', '😬', '🤪', '🥳', '🥸', '🤠', '🤓', '🤥', '👽']
 
 action_list = [
