@@ -55,5 +55,10 @@ def user_mode():
 
 if USER.lower() == 'user':
     threading.Thread(target=user_mode).start()
+    client_socket.send(
+        f'{response.avatar()} {USER} has joined the server!'.encode())
+
 else:
     threading.Thread(target=bot_mode).start()
+    client_socket.send(
+        f'{response.avatar()} {USER} has joined the server!'.encode())

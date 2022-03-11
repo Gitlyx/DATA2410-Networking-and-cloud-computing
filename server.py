@@ -31,7 +31,6 @@ def server():
     while True:
         client_socket, client_address = server_socket.accept()
         client_list.append(client_socket)
-        broadcast(f'Update: {client_address} has connected to the server.')
 
         thread = threading.Thread(target=listener, args=(client_socket,))
         thread.start()
