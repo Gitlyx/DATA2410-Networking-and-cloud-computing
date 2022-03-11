@@ -8,6 +8,7 @@ print("Server is listening ...")
 
 client_list = []
 
+    
 
 def broadcast(message):
     print(message)
