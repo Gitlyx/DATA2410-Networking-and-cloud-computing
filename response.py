@@ -1,10 +1,14 @@
 import random
 
+icon_list = ['😡', '😳', '😬', '🤪', '🥳', '🥸', '🤠', '🤓', '🤥', '👽']
 
 action_list = [
     'cook', 'eat', 'sleep', 'play', 'game', 'work', 'study',
     'fight', 'run', 'swim', 'drive', 'walk', 'exercize', 'jogg'
 ]
+
+
+def avatar(): return random.choice(icon_list)
 
 
 def positive(word):
