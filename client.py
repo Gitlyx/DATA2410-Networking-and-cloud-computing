@@ -1,12 +1,13 @@
-import random
+import re
 import socket
 import sys
 import threading
-from time import sleep
+import response
 
-HOST = 'localhost'
-PORT = int(sys.argv[1])
-USER = sys.argv[2]
+
+HOST = socket.gethostname()
+PORT = 2345
+USER = sys.argv[1]
 
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,67 +15,45 @@ client_socket.connect((HOST, PORT))
 
 
 def bot_response(message):
-    word_list = message.split()
-    action_list = [
-        'cook', 'eat', 'sleep', 'play', 'game', 'work', 'study',
-        'fight', 'run', 'swim', 'drive', 'walk', 'exercize',
-    ]
-
+    word_list = re.split(r'\s+|[,;?!.]\s*', message.lower())
+    word_found = False
     verb = ''
-    detected = False
 
-    for action in action_list:
+    for action in response.action_list:
         for word in word_list:
             if word == action:
-                detected = True
-                verb = f'{word}ing'
+                word_found = True
+                verb = word
 
-    positive_response_list = [
-        f'Wow, {verb}? My palms are sweaty ..',
-        f'I can\'t handle {verb}, my knees are weak and arms are heavy.',
-        f'Finally someone who likes {verb}, just let me grab my moms spaghetti.',
-        f'I haven\'t tried {verb} before, but I promise I\'ll remain calm and ready. '
-    ]
-
-    negative_response_list = [
-        f'I dont know what that is, can we do something else?',
-        f'Haha, what planet are you from? We don\'t do that here 😂😂'
-        f'What a strange request, I hope I never have to do that!',
-        f'Not even my granny would do that!',
-    ]
-
-    if detected == True:
-        response = f'🟩{random.choice(positive_response_list)}'
+    if word_found:
+        bot_response = f'🟩 {response.positive(verb)}'
     else:
-        response = f'🟥 {random.choice(negative_response_list)}'
+        bot_response = f'🟥 {response.negative()}'
 
-    return response
+    return bot_response
 
 
 def bot_mode():
-    print('Initiating bot mode ...')
+    print(f'Chat bot has been launched with name {USER}')
 
     while True:
         message = client_socket.recv(1024).decode()
         user_reply = message.split()
 
-        if user_reply[0] == 'user:':
+        if user_reply[0].lower() == 'user:':
             response = bot_response(message)
-            client_socket.send(f'{USER}:{response}'.encode())
+            client_socket.send(f'{USER}: \t{response}'.encode())
 
 
 def user_mode():
-    print('Initiating user mode ...')
+    print(f'USER detected, launching entering chatroom as: {USER}')
 
     while True:
-        print('Taking responses')
         response = input(f"\n{USER}: ")
-        print('Reponse taken')
-        client_socket.send(f'{USER}: {response}'.encode())
-        print('Reponse delivered')
+        client_socket.send(f'{USER}: \t{response}'.encode())
 
 
-if USER == 'user':
+if USER.lower() == 'user':
     threading.Thread(target=user_mode).start()
 else:
     threading.Thread(target=bot_mode).start()
