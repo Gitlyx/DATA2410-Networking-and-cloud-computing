@@ -1,31 +1,80 @@
+
 import re
 import socket
 import sys
 import threading
+from time import sleep
+from tkinter import E
 import response
+
+
 
 
 HOST = socket.gethostname()
 PORT = 2345
 USER = sys.argv[1]
 
-
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
-client_socket.send(
-    f'{response.avatar()} {USER} has joined the server!'.encode())
 
+def start_client():
+    set_username = f'{USER}'
+    client_socket.sendall(set_username.encode())
 
-# Function to detect verbs in string as well as format a fitting response
-# Special symbols are filtered and set to lower case for easier detection.
-def bot_response(message):
+    if USER.lower() == 'user':
+        threading.Thread(target=client_recv).start()
+        threading.Thread(target=client_send).start()
+        print(f'\n{USER} has connected to the server. Listening to inputs ...')
+
+    else:
+        threading.Thread(target=bot_recv).start()
+        print(f'\nBot with name {USER} has connected and now listening to responses ...'
+    )
+
+# This code block is active if the client is named "user". It recognizes that the user needs input options.
+# User also has permission to execute commands.
+def client_recv():
+    while True:
+        try:
+            message = client_socket.recv(1024).decode()
+            if len(message) > 0 :
+                print(f'{message}', end='\n')
+        except:
+            print('Connection has been terminated.')
+            client_socket.close()
+            break
+ 
+
+def client_send():
+    while True :
+        response = input()
+        client_socket.sendall(response.encode())
+        
+
+# This code block is for bots. It detects if the variable USER is not initially set to user but anything else.
+# BOT has the ability to respond to any command that the "user" has replied with.
+def bot_recv():
+    print('bot_recv() active.')
+
+    while True:
+        try:
+            message = client_socket.recv(1024).decode()
+            user_reply = message.split()
+            if user_reply[0].lower() == 'user:' and user_reply[1].lower().find('-') != 0:
+                response = bot_send(message)
+                client_socket.send(response.encode())
+        except:
+            print('Connection has been terminated.')
+            client_socket.close()
+            break
+
+def bot_send(message):
     word_list = re.split(r'\s+|[,;?!.]\s*', message.lower())
     word_found = False
-    verb = ''
 
     for action in response.action_list:
         for word in word_list:
-            if word == action:
+            if word == action or word == f'{action}ing':
                 word_found = True
                 verb = word
 
@@ -35,32 +84,6 @@ def bot_response(message):
         bot_response = f'🟥 {response.negative()}'
 
     return bot_response
+    
 
-
-# Bot-mode allows the client to listen and automatically respond to non-bot USERs
-# User-mode allows the client to listen to send messages and commands.
-def bot_mode():
-    print(f'Chat bot has been launched with name {USER}')
-
-    while True:
-        message = client_socket.recv(1024).decode()
-        user_reply = message.split()
-
-        if user_reply[0].lower() == 'user:':
-            response = bot_response(message)
-            client_socket.send(f'{USER}: \t{response}'.encode())
-
-
-def user_mode():
-    print(f'USER detected, launching entering chatroom as: {USER}')
-
-    while True:
-        response = input(f"\n{USER}: ")
-        client_socket.send(f'\n{USER}: \t{response}'.encode())
-
-
-# IF test to delegate role upon user declaration.
-if USER.lower() == 'user':
-    threading.Thread(target=user_mode).start()
-else:
-    threading.Thread(target=bot_mode).start()
+start_client()

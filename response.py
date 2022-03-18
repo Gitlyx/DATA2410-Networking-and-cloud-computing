@@ -2,15 +2,11 @@ import random
 
 # Responses was refactored to unclutter and separate logic from trivial code.
 
-icon_list = ['😡', '😳', '😬', '🤪', '🥳', '🥸', '🤠', '🤓', '🤥', '👽']
 
 action_list = [
     'cook', 'eat', 'sleep', 'play', 'game', 'work', 'study',
     'fight', 'run', 'swim', 'drive', 'walk', 'exercize', 'jogg'
 ]
-
-
-def avatar(): return random.choice(icon_list)
 
 
 def positive(word):
@@ -23,15 +19,10 @@ def positive(word):
         f'{word.upper()}!!! Lets goooo!! 🤯🤯🤯',
         f'It\'s a party! Bro, lets go {word}ing now! 🎉🎉🎉',
         f'{word.upper()}!!{word.upper()}!!{word.upper()}!!😎😎😎',
-
-
     ]
+    return random.choice(positive_responses)
 
-    response = random.choice(positive_responses)
-    return response
-
-
-def negative():
+def negative(): 
     negative_response = [
         f'I dont know what that is!😒',
         f'Haha, what planet are you from? 😂😂',
@@ -43,8 +34,5 @@ def negative():
         f'Hmm .. Whats that? 🤔',
         f'Strange request. 🤨',
         f'Whaaa 🤔',
-
     ]
-
-    response = random.choice(negative_response)
-    return response
+    return random.choice(negative_response)
