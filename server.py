@@ -1,128 +1,143 @@
 from pydoc import cli
 import socket
 import threading
+from time import sleep
+from xmlrpc import client
+import response
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((socket.gethostname(), 2345))
-server_socket.listen(4)
-client_list = []
+server_socket.listen()
+connection_list = []
 username_list = []
 
-def start_server():
-    print('Server has been started up.')
-    print(f'Server now has 0/4 connections.\n')
+print('''
+-------------------------------------------------------------
+██     ██ ███████ ██       ██████  ██████  ███    ███ ███████ 
+██     ██ ██      ██      ██      ██    ██ ████  ████ ██      
+██  █  ██ █████   ██      ██      ██    ██ ██ ████ ██ █████   
+██ ███ ██ ██      ██      ██      ██    ██ ██  ██  ██ ██      
+ ███ ███  ███████ ███████  ██████  ██████  ██      ██ ███████
+--------------------------------------------------------------                                                                                                           
+''')
 
+
+def server_accept():
     while True:
-        count = len(client_list)
-        client_socket, client_address = server_socket.accept()
-        client_list.append(client_socket)
+        client_connection, client_address = server_socket.accept()
+        connection_list.append(client_connection)
 
-        # client.py automatically sends its username upon connection.
-        username = client_socket.recv(1024).decode()
-        username_list.append(username)
+        # connection.py automatically sends its username upon connection.
+        client_username = client_connection.recv(1024).decode()
+        username_list.append(client_username)
 
-        broadcast_message(f"{username} has entered the chat.")
-        print(f"{username} has entered the chat.")
+        server_broadcast(f"{client_username} has entered the chat.")
+        print(f"{client_username} has entered the chat.")
 
         # Each connection has its own thread listening to responses.
-        threading.Thread(target=server_recv, args=(client_socket,)).start()
+        threading.Thread(target=server_recv, args=(
+            client_connection, client_username)).start()
+        if len(connection_list) == 4:
+            print('There are now 4 connections, you can start chatting with eachother, here is some actions you can use: ')
+            print(response.action_list)
 
-# The server_recv is listening to any responses the client is sending. 
-# The try/catch- block is implemented to close the connection upon errors such as infinite loops and BrokenPipe errors.
-def server_recv(client_socket):
+
+def server_recv(client_connection, client_username):
     while True:
         try:
-            message = client_socket.recv(1024).decode()
-            if len(message) > 0 :
-                if not command(client_socket,message): send_message(client_socket, message)
+            message = client_connection.recv(1024).decode()
+            if len(message) > 0:
+                if is_command(message):
+                    translate_commands(client_connection, message)
+                else:
+                    message = f'{client_username}: {message}'
+                    client_broadcast(client_connection, message)
+                    print(f'{message}\r')
         except:
-            client_socket.close()
+            print(f'{client_username} has left the chat.')
+            client_connection.close()
             break
+
+        return client_username
 
 
 # I have broken down all frequently used tasks into functions for easier readability.
 # These functions are made to more easily understand which tasks the server has to handle.
-def broadcast_message(message):
-    # Breoadcasts all the messages accross all connections.
-    for client in client_list:
-        client.sendall(message.encode())
+def server_broadcast(message):
+    if not connection_list:
+        for connection in connection_list:
+            connection.sendall(message.encode())
 
-def send_message(client_socket, message):
-    # Sends our messages to other clients using "{username}: {message}" formatting.
-    username = get_username(client_socket)
-    message = f'{username}: {message}'
-    for client in client_list:
-        if client != client_socket and client_socket != "":
-            client.sendall(message.encode())
-    print(f'{message}', end='\n')
 
-def get_username(client_socket):
-    # Looks up which username each client has based on the matching connection data.
-    index = client_list.index(client_socket)
+def client_broadcast(client_connection, message):
+    for connection in connection_list:
+        if connection != client_connection and client_connection != "":
+            connection.sendall(message.encode())
+
+
+def get_username(client_connection):
+    index = connection_list.index(client_connection)
     username = username_list[index]
     return username
 
-def get_client_socket(username):
-    # Looks up what connection data each user has based on their username.
+
+def get_connection(username):
     index = username_list.index(username)
-    client_socket = client_list[index]
-    return client_socket
+    client_connection = connection_list[index]
+    return client_connection
 
-def close_connection(client_socket, username):
-    # Closes a single connection based on parameter: username. 
-    if username in username_list:
-        client_connection = get_client_socket(username)
-        client_connection.sendall(f'{username} has been disconnected.'.encode())
-        client_connection.close()        
 
-        client_list.remove(client_connection)
-        username_list.remove(username)
+def kick_username(client_connection, target_username):
+    if target_username in username_list:
+        target_connection = get_connection(target_username)
+        target_connection.close()
+
+        connection_list.remove(target_connection)
+        username_list.remove(target_username)
+
+        response = f'You have kicked {target_username}.'
+        client_connection.sendall(response.encode())
     else:
-        response = (f'Could not find {username} in list of connections.')
-        client_socket.sendall(response.encode())
-        
-def close_all_connections(client_socket):
-    # Closes up all connections, allowing the user to be the last connection closed.
-    for client in client_list:
+        response = (
+            f'Could not find {target_username} in list of connections.')
+        client_connection.sendall(response.encode())
+
+
+def close_connections(client_connection):
+    for connection in connection_list:
         try:
-            if client != client_socket:
-                username = get_username(client)
-                client.close()
-                print(f'{username} has been terminated.')
+            if connection != client_connection:
+                username = get_username(connection)
+                connection.close()
         except:
             print(f'Error disconnecting {username}.')
 
-    client_socket.sendall('Your connection has been temrinated.'.encode())
-    client_socket.close()
+    response = 'Your connection has been terminated.'
+    client_connection.sendall(response.encode())
+    client_connection.close()
 
 
-
-# This code block is for handling commands sent from the user with "--" prefix.
-# All the commands are made server side so that the server is able to handle all the clients indevidually.
-def command(client_socket,message):
-    # Checks if the message is a command by confirming that it is limited to max 2 substring AND as well as including the prefix "--".
+def is_command(message):
     if len(message.split()) <= 2 and message.find('--') == 0:
-        execute_commands(client_socket, message)
+        return True
 
 
-def execute_commands(client_socket, message):
-    # Each command has to be an exact match, otherwise the user is promted to use one of the existing commands available.    
+def translate_commands(client_connection, message):
     if '--help' in message:
         response = 'Try communicating with the connected clients by suggesting an action such as "Anyone want to play a game?"'
-        print(response)
-        client_socket.sendall(response.encode())
-
-    elif '--exit' in message:
-        response = 'Exit command has been requested, closing down the server.'
-        client_socket.sendall(response.encode())
-        close_all_connections(client_socket)
+        client_connection.sendall(response.encode())
 
     elif '--kick' in message and len(message.split()) == 2:
         username = message.split()[1]
-        close_connection(client_socket, username)
+        kick_username(client_connection, username)
+
+    elif '--exit' in message:
+        print('\nExit command has been requested, closing down the server.')
+        close_connections(client_connection)
 
     else:
         message = 'Unknown command. Try [--help/--exit/--kick \{username\}].'
-        client_socket.sendall(message.encode())
+        client_connection.sendall(message.encode())
 
-start_server()
+
+server_accept()
