@@ -139,5 +139,4 @@ def translate_commands(client_connection, message):
         message = 'Unknown command. Try [--help/--exit/--kick \{username\}].'
         client_connection.sendall(message.encode())
 
-
 server_accept()
