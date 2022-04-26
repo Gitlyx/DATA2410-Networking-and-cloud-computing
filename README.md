@@ -1,8 +1,8 @@
 ## Results 
-Course: DATA2410-Networking-and-cloud-computing
-Title: Individual Portfolio Assignment 
-Author: Charlie Vo, s188910.
-Grade: 59/60 points (A).
+##### Course: DATA2410-Networking-and-cloud-computing
+##### Title: Individual Portfolio Assignment 
+##### Author: Charlie Vo, s188910.
+##### Grade: 59/60 points (A).
 
 ## Summary
 In this assignment, I have created a chat application where a server and a client are configured to act as a send and receive messaging service. The two main files are client.py and server.py. My choice of programming language is Python.
